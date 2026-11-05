@@ -1,0 +1,61 @@
+CREATE DATABASE SalesDB;
+GO
+
+USE SalesDB;
+GO
+
+CREATE TABLE NhanVien
+(
+    MaNV INT IDENTITY(1,1) PRIMARY KEY,
+    TenNV NVARCHAR(100) NOT NULL,
+    SoDienThoai VARCHAR(15) UNIQUE,
+    ChucVu NVARCHAR(50)
+);
+
+CREATE TABLE KhachHang
+(
+    MaKH INT IDENTITY(1,1) PRIMARY KEY,
+    TenKH NVARCHAR(100) NOT NULL,
+    DienThoai VARCHAR(15) UNIQUE,
+    DiemTichLuy INT DEFAULT 0
+);
+
+CREATE TABLE SanPham
+(
+    MaSP VARCHAR(20) PRIMARY KEY,
+    TenSP NVARCHAR(150) NOT NULL,
+    GiaBan DECIMAL(18,2) CHECK (GiaBan > 0),
+    SoLuongTon INT CHECK (SoLuongTon >= 0)
+);
+
+CREATE TABLE HoaDon
+(
+    MaHD INT IDENTITY(1,1) PRIMARY KEY,
+    NgayLap DATETIME DEFAULT GETDATE(),
+    MaNV INT NOT NULL,
+    MaKH INT NULL,
+    TongTien DECIMAL(18,2),
+
+    CONSTRAINT FK_HoaDon_NhanVien
+        FOREIGN KEY(MaNV) REFERENCES NhanVien(MaNV),
+
+    CONSTRAINT FK_HoaDon_KhachHang
+        FOREIGN KEY(MaKH) REFERENCES KhachHang(MaKH)
+);
+
+CREATE TABLE ChiTietHoaDon
+(
+    MaHD INT,
+    MaSP VARCHAR(20),
+
+    SoLuong INT CHECK(SoLuong > 0),
+    DonGia DECIMAL(18,2),
+
+    PRIMARY KEY(MaHD, MaSP),
+
+    FOREIGN KEY(MaHD)
+        REFERENCES HoaDon(MaHD),
+
+    FOREIGN KEY(MaSP)
+        REFERENCES SanPham(MaSP)
+);
